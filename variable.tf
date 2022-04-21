@@ -32,6 +32,13 @@ variable "database_subnetcidr" {
   default     = ["10.0.5.0/24", "10.0.7.0/24"]
   description = "list of database cidr"
 }
+variable "app_port" {
+  default = 8080
+  type = number
+  description = "for app_port"
+}
+
+
 variable "http_port" {
   default     = 80
   type        = number

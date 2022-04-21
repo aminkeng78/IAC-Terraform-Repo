@@ -11,6 +11,21 @@ resource "aws_security_group" "web" {
     cidr_blocks = ["0.0.0.0/0"]
 
   }
+
+  ingress {
+    description = "http from everywhere"
+    from_port   = var.http_port
+    to_port     = var.http_port
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  ingress {
+    description = "https from everywhere"
+    from_port   = var.https_port
+    to_port     = var.https_port
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
   egress {
     from_port   = 0
     to_port     = 0
@@ -32,13 +47,7 @@ resource "aws_security_group" "app" {
     protocol        = "tcp"
     security_groups = [aws_security_group.web.id]
   }
-  #    ingress {
-  #   description = "http from vpc"
-  #   from_port   = 3306
-  #   to_port     = 3306
-  #   protocol    = "tcp"
-  #   security_groups = [aws_security_group.db_sg.id]
-  # }
+
 
   egress {
     from_port   = 0
@@ -64,6 +73,13 @@ resource "aws_security_group" "lb_sg" {
     description = "https from everywhere"
     from_port   = var.https_port
     to_port     = var.https_port
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+   ingress {
+    description = "app port from everywhere"
+    from_port   = var.app_port
+    to_port     = var.app_port
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
