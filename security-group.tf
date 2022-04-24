@@ -1,30 +1,29 @@
+
 resource "aws_security_group" "web" {
-  name        = format("%s-%s", var.component-name, "web-sg")
-  description = "Allow http inbound traffic"
+  name        = "${var.component-name}_web"
+  description = "Allow ssh inbound traffic from Philo"
   vpc_id      = local.vpc_id
 
   ingress {
-    description = "http from VPC"
+    description = "http traffic from port 80"
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  ingress {
+    description = "http traffic from port 80"
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  ingress {
+    description = "http traffic from port 8080"
     from_port   = 8080
     to_port     = 8080
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
-
-  }
-
-  ingress {
-    description = "http from everywhere"
-    from_port   = var.http_port
-    to_port     = var.http_port
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-  ingress {
-    description = "https from everywhere"
-    from_port   = var.https_port
-    to_port     = var.https_port
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
   }
   egress {
     from_port   = 0
@@ -33,62 +32,80 @@ resource "aws_security_group" "web" {
     cidr_blocks = ["0.0.0.0/0"]
 
   }
+  tags = {
+    "Name" = "${var.component-name}_web"
+  }
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
-resource "aws_security_group" "app" {
-  name        = format("%s-%s", var.component-name, "app-sg")
-  description = "Allow ssh inbound traffic"
+resource "aws_security_group" "web_server" {
+  name        = "${var.component-name}_web_server"
+  description = "Allow shh inbound traffic from ${aws_security_group.web.id}"
   vpc_id      = local.vpc_id
 
   ingress {
-    description     = "ssh"
-    from_port       = var.ssh_port
-    to_port         = var.ssh_port
+    description     = "http from VPC"
+    from_port       = 8080
+    to_port         = 8080
     protocol        = "tcp"
+    cidr_blocks     = ["73.133.14.137/32"]
     security_groups = [aws_security_group.web.id]
   }
-
 
   egress {
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
+  }
 
+  tags = {
+    "Name" = "${var.component-name}_web_server"
+  }
+  lifecycle {
+    create_before_destroy = true
   }
 }
-resource "aws_security_group" "lb_sg" {
-  name        = format("%s-%s", var.component-name, "lb-sg")
+
+resource "aws_security_group" "app_sg" {
+  name        = "${var.component-name}_lb_sg"
   description = "Allow inbound traffic from everywhere"
   vpc_id      = local.vpc_id
 
   ingress {
-    description = "http from everywhere"
-    from_port   = var.http_port
-    to_port     = var.http_port
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-  ingress {
-    description = "https from everywhere"
-    from_port   = var.https_port
-    to_port     = var.https_port
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-   ingress {
-    description = "app port from everywhere"
-    from_port   = var.app_port
-    to_port     = var.app_port
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    description     = "http from everywhere"
+    from_port       = 8080
+    to_port         = 8080
+    protocol        = "tcp"
+    security_groups = [aws_security_group.web.id]
   }
 
+  ingress {
+    description     = "22 from web sg"
+    from_port       = 80
+    to_port         = 80
+    protocol        = "tcp"
+    security_groups = [aws_security_group.web_server.id]
+  }
+  ingress {
+    description     = "22 from web sg"
+    from_port       = 443
+    to_port         = 443
+    protocol        = "tcp"
+    security_groups = [aws_security_group.web_server.id]
+  }
   egress {
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
-
+  }
+  tags = {
+    "Name" = "${var.component-name}_app_sg"
+  }
+  lifecycle {
+    create_before_destroy = true
   }
 }

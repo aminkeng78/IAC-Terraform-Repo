@@ -19,10 +19,10 @@ provider "aws" {
 terraform {
 
   backend "s3" {
-    bucket =  "iacs3.bucket"
-    key = "terraform.tfstate"
-    region = "us-east-1"
-    encrypt = true
+    bucket         = "iacs3.bucket"
+    key            = "terraform.tfstate"
+    region         = "us-east-1"
+    encrypt        = true
     dynamodb_table = "terraform-lock"
   }
 }

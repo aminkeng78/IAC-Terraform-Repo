@@ -130,7 +130,7 @@ module "alb" {
         matcher             = "200-399"
       }
       protocol_version = "HTTP1"
-     
+
     },
     # App2 Target Group - TG Index = 1
     {
@@ -151,7 +151,7 @@ module "alb" {
         matcher             = "200-399"
       }
       protocol_version = "HTTP1"
-     
+
     },
     # App3 Target Group - TG Index = 2
     {
@@ -179,11 +179,11 @@ module "alb" {
       protocol_version = "HTTP1"
       targets = {
         my_app3_vm1 = {
-          target_id = aws_instance.web[0].id
+          target_id = try(aws_instance.web[0].id, "")
           port      = 8080
         },
         my_app3_vm2 = {
-          target_id = aws_instance.web[1].id
+          target_id = try(aws_instance.web[1].id, "")
           port      = 8080
         }
       }

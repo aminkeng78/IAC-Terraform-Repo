@@ -33,8 +33,8 @@ variable "database_subnetcidr" {
   description = "list of database cidr"
 }
 variable "app_port" {
-  default = 8080
-  type = number
+  default     = 8080
+  type        = number
   description = "for app_port"
 }
 

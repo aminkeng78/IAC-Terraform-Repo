@@ -25,6 +25,9 @@ resource "aws_s3_bucket" "iacs3_bucket" {
     enabled = true
   }
 
+    lifecycle {
+    prevent_destroy = true
+  }
   tags = {
     Name        = var.s3_name[count.index]
   }
@@ -36,6 +39,10 @@ resource "aws_dynamodb_table" "dynamodb-terraform-lock" {
   hash_key       = "LockID"
   read_capacity  = 20
   write_capacity = 20
+
+  lifecycle {
+    prevent_destroy = true
+  }
 
   attribute {
     name = "LockID"

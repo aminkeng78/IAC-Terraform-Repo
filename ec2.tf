@@ -1,19 +1,18 @@
- 
+
 
 locals {
   subnet_id = [aws_subnet.priv_subnet[0].id, aws_subnet.priv_subnet[1].id]
-  Name      = ["app1_instance", "app2_instance"]
+  Name      = ["app1_instance"]
 
-  vpc_security_group_ids = [aws_security_group.web.id, aws_security_group.app.id]
-  mysql = jsondecode(data.aws_secretsmanager_secret_version.mysecret.secret_string) 
+  # vpc_security_group_ids = [aws_security_group.web.id, aws_security_group.app.id]
+  mysql = jsondecode(data.aws_secretsmanager_secret_version.mysecret.secret_string)
 
 }
 
 
 data "aws_secretsmanager_secret_version" "mysecret" {
-  secret_id     = module.aurora.secrets_version.secret_id
+  secret_id = module.aurora.secrets_version
 }
-
 
 
 data "aws_ami" "amzlinux2" {
@@ -37,16 +36,15 @@ data "aws_ami" "amzlinux2" {
   }
 }
 
-
-
 resource "aws_instance" "web" {
-  depends_on = [module.aurora]
+  depends_on             = [module.aurora]
   count                  = var.create_instance ? length(local.Name) : 0
   ami                    = data.aws_ami.amzlinux2.id
   instance_type          = "t2.micro"
-  subnet_id              = local.subnet_id[count.index] 
+  subnet_id              = local.subnet_id[count.index]
   iam_instance_profile   = aws_iam_instance_profile.instance_profile.name
   key_name               = aws_key_pair.bastion_instance.id
+  vpc_security_group_ids = [aws_security_group.app_sg.id]
   user_data = templatefile("${path.module}/template/registrationapp.tmpl",
 
     {
@@ -62,8 +60,17 @@ resource "aws_instance" "web" {
   tags = {
     Name = local.Name[count.index]
   }
+  lifecycle {
+    ignore_changes = [
+      user_data,
+    ]
+  }
 }
 
+# Lifecycle policies
+# Create before destroy 
+# prevent destroy 
+# ignore changes
 
 resource "aws_key_pair" "bastion_instance" {
   key_name   = "bastion_instance"
