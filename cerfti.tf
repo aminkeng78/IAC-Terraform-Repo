@@ -1,11 +1,28 @@
-
+    
 data "aws_route53_zone" "coniliuscf" {
-  name = "coniliuscf.org"
+  name = lookup(var.dns_name, terraform.workspace)
 }
+
+variable "dns_name" {
+  type = map
+  default = {
+    prod = "coniliuscf.org"
+    sbx = "coniliuscf.org"
+  } 
+}
+
+variable "dns_host_name" {
+  type = map
+  default = {
+    prod = "www.coniliuscf.org"
+    sbx = "www.coniliuscf.org"
+  } 
+}
+
 
 resource "aws_route53_record" "www" {
   zone_id = data.aws_route53_zone.coniliuscf.zone_id
-  name    = "www.coniliuscf.org"
+  name    = lookup(var.dns_host_name, terraform.workspace)
   type    = "A"
 
   alias {

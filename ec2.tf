@@ -1,8 +1,8 @@
-
+                               
 
 locals {
   subnet_id = [aws_subnet.priv_subnet[0].id, aws_subnet.priv_subnet[1].id]
-  Name      = ["app1_instance"]
+  Name      = ["app1_instance", "app2_instance"]
 
   # vpc_security_group_ids = [aws_security_group.web.id, aws_security_group.app.id]
   mysql = jsondecode(data.aws_secretsmanager_secret_version.mysecret.secret_string)

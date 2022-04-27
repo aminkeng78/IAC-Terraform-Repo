@@ -5,6 +5,8 @@
 *.tfstate
 *.tfstate.*
 app.sh
+prod.tfvars
+sbx.tfvars
 
 # Crash log files
 crash.log

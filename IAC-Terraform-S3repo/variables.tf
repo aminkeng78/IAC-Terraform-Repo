@@ -1,5 +1,5 @@
 
-variable "s3_cfname" {
+variable "s3_name" {
     type = list
     description = "for my s3 bucket"
 }

@@ -85,6 +85,7 @@ resource "aws_lb_listener" "front_end" {
 }
 */
 # Terraform AWS Application Load Balancer (ALB)
+
 module "alb" {
   source = "terraform-aws-modules/alb/aws"
 
@@ -248,5 +249,4 @@ module "alb" {
     },
   ]
 }
-
 

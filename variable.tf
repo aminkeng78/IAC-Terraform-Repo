@@ -19,17 +19,14 @@ variable "component-name" {
 
 variable "pub_subnetcidr" {
   type        = list(any)
-  default     = ["10.0.0.0/24", "10.0.2.0/24"]
   description = "list of public cidr"
 }
 variable "private_subnetcidr" {
   type        = list(any)
-  default     = ["10.0.1.0/24", "10.0.3.0/24"]
   description = "list of private cidr"
 }
 variable "database_subnetcidr" {
   type        = list(any)
-  default     = ["10.0.5.0/24", "10.0.7.0/24"]
   description = "list of database cidr"
 }
 variable "app_port" {
@@ -38,6 +35,10 @@ variable "app_port" {
   description = "for app_port"
 }
 
+variable "vpc_cidr" {
+  description = "for vpc cidr"
+  type = string 
+}
 
 variable "http_port" {
   default     = 80
@@ -62,6 +63,13 @@ variable "master_username" {
   default     = "dbadmin"
   description = "db user name"
 }
+
+
+variable "account_id" {
+ type = map
+
+}
+
 # variable "pub_az1" {
 #   type = list
 #   default = ["us-east-1a", "us-east-1b"]

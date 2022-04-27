@@ -8,9 +8,12 @@ terraform {
 }
 
 # Configure the AWS Provider
+
 provider "aws" {
   region  = var.aws_region
-  profile = "default"
+  assume_role {
+    role_arn = "arn:aws:iam::${lookup(var.account_id, terraform.workspace)}:role/Terraform_assumeRole"
+  }
   default_tags {
     tags = local.mandatory_tag
   }
@@ -26,3 +29,8 @@ terraform {
     dynamodb_table = "terraform-lock"
   }
 }
+
+
+ # SBX = arn:aws:iam::848169424404:role/Terraform_assumeRole 
+ #arn:aws:iam::290566818138:role/Terraform_assumRole 
+
