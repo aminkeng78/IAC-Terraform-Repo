@@ -24,11 +24,8 @@
 #   value       = [for arn in aws_instance.terraform : arn.arn]
 #   sensitive   = false
 # }
-output "public_ip" {
-  value = aws_instance.web.*.public_ip
-}
 
-# output "dns_name" {
-#   description = "cLICK on this link to connect to our application"
-#   value       = format("https://%s", aws_route53_record.www.name)
-# }
+ output "dns_name" {
+   description = "cLICK on this link to connect to our application"
+  value       = format("https://%s", aws_route53_record.www.name)
+ }

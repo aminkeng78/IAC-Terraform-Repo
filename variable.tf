@@ -17,28 +17,13 @@ variable "component-name" {
   default = "iac-terraform-repo"
 }
 
-variable "pub_subnetcidr" {
-  type        = list(any)
-  description = "list of public cidr"
-}
-variable "private_subnetcidr" {
-  type        = list(any)
-  description = "list of private cidr"
-}
-variable "database_subnetcidr" {
-  type        = list(any)
-  description = "list of database cidr"
-}
+
 variable "app_port" {
   default     = 8080
   type        = number
   description = "for app_port"
 }
 
-variable "vpc_cidr" {
-  description = "for vpc cidr"
-  type = string 
-}
 
 variable "http_port" {
   default     = 80
@@ -66,8 +51,11 @@ variable "master_username" {
 
 
 variable "account_id" {
- type = map
-
+  type = map(any)
+  default = {
+    prod = "290566818138"
+    sbx  = "848169424404"
+  }
 }
 
 # variable "pub_az1" {

@@ -1,36 +1,33 @@
 
+
+
+
 resource "aws_security_group" "web" {
   name        = "${var.component-name}_web"
   description = "Allow ssh inbound traffic from Philo"
   vpc_id      = local.vpc_id
 
-  ingress {
-    description = "http traffic from port 80"
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+  dynamic "ingress"{
+    for_each = local.web_ingress_rules
+    
+    content {
+     description = ingress.value.description
+    from_port   = ingress.value.from_port
+    to_port     = ingress.value.to_port
+    protocol    =ingress.value.protocol
+    cidr_blocks = ingress.value.cidr_blocks
+ 
+    }
   }
-  ingress {
-    description = "http traffic from port 80"
-    from_port   = 443
-    to_port     = 443
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-  ingress {
-    description = "http traffic from port 8080"
-    from_port   = 8080
-    to_port     = 8080
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-
+  dynamic "egress"{
+    for_each = local.egress_rule
+    iterator = foo
+   content {
+    from_port   = foo.value.from_port
+    to_port     = foo.value.to_port
+    protocol    = foo.value.protocol
+    cidr_blocks = foo.value.cidr_blocks
+    }
   }
   tags = {
     "Name" = "${var.component-name}_web"
@@ -45,20 +42,29 @@ resource "aws_security_group" "web_server" {
   description = "Allow shh inbound traffic from ${aws_security_group.web.id}"
   vpc_id      = local.vpc_id
 
-  ingress {
-    description     = "http from VPC"
-    from_port       = 8080
-    to_port         = 8080
-    protocol        = "tcp"
-    cidr_blocks     = ["73.133.14.137/32"]
-    security_groups = [aws_security_group.web.id]
+  dynamic "ingress"{
+    for_each = local.web_server_ingress_rules
+
+   content {
+     description = ingress.value.description
+    from_port   = ingress.value.from_port
+    to_port     = ingress.value.to_port
+    protocol    =ingress.value.protocol
+    cidr_blocks = ingress.value.cidr_blocks
+    security_groups= ingress.value.security_groups
+
+    }
   }
 
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
+  dynamic "egress"{
+    for_each = local.egress_rule
+    iterator = foo
+   content {
+    from_port   = foo.value.from_port
+    to_port     = foo.value.to_port
+    protocol    = foo.value.protocol
+    cidr_blocks = foo.value.cidr_blocks
+    }
   }
 
   tags = {
@@ -74,33 +80,28 @@ resource "aws_security_group" "app_sg" {
   description = "Allow inbound traffic from everywhere"
   vpc_id      = local.vpc_id
 
-  ingress {
-    description     = "http from everywhere"
-    from_port       = 8080
-    to_port         = 8080
-    protocol        = "tcp"
-    security_groups = [aws_security_group.web.id]
+  dynamic "ingress"{
+    for_each = local.app_sg_ingress_rules
+
+    content {
+     description = ingress.value.description
+    from_port   = ingress.value.from_port
+    to_port     = ingress.value.to_port
+    protocol    =ingress.value.protocol
+    security_groups= ingress.value.security_groups
+
+    }
   }
 
-  ingress {
-    description     = "22 from web sg"
-    from_port       = 80
-    to_port         = 80
-    protocol        = "tcp"
-    security_groups = [aws_security_group.web_server.id]
-  }
-  ingress {
-    description     = "22 from web sg"
-    from_port       = 443
-    to_port         = 443
-    protocol        = "tcp"
-    security_groups = [aws_security_group.web_server.id]
-  }
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
+  dynamic "egress"{
+    for_each = local.egress_rule
+    iterator = foo
+   content {
+    from_port   = foo.value.from_port
+    to_port     = foo.value.to_port
+    protocol    = foo.value.protocol
+    cidr_blocks = foo.value.cidr_blocks
+    }
   }
   tags = {
     "Name" = "${var.component-name}_app_sg"

@@ -1,6 +1,8 @@
+
+
 locals {
   name      = format("%s-%s", var.component-name, "mysql")
-  db_subnet = aws_subnet.database_subnet.*.id
+  db_subnet = ""
 }
 
 resource "aws_security_group" "db_sg" {
@@ -48,7 +50,7 @@ module "aurora" {
 
   vpc_id = local.vpc_id
   #   db_subnet_group_name   = local.db_subnets_names
-  subnets                = local.db_subnet
+  subnets                = local.data_subnet_ids
   create_db_subnet_group = true
   create_security_group  = false
   #   allowed_cidr_blocks    = local.private_sunbet_cidrs

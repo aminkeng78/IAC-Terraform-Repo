@@ -35,7 +35,7 @@ resource "aws_s3_bucket" "iacs3_bucket" {
 
 
 resource "aws_dynamodb_table" "dynamodb-terraform-lock" {
-  name           = "terraform-lock"
+  name           = "terraform-lock-backup"
   hash_key       = "LockID"
   read_capacity  = 20
   write_capacity = 20

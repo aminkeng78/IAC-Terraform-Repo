@@ -1,89 +1,4 @@
-/*resource "aws_lb" "kojitechs-lb" {
-  name               = format("%s-%s", var.component-name, "kojitechs-lb")
-  internal           = false
-  load_balancer_type = "application"
-  security_groups    = [aws_security_group.web.id]
-  subnets            = aws_subnet.public_subnet.*.id # [for subnet in aws_subnet.public : subnet.id]
 
-  tags = {
-    Name = format("%s-%s", var.component-name, "kojitechs-lb")
-  }
-}
-
-resource "aws_lb_target_group" "kojitechs_tg" {
-   count                  = var.create_instance ? length(local.Name) : 0
-  name     = format("%s-%s", var.component-name, "tg")
-  port     = var.app_port
-  protocol = "HTTP"
-  vpc_id   = local.vpc_id
-  health_check {
-    healthy_threshold   = 2
-    unhealthy_threshold = 2
-    timeout             = 3
-    protocol            = "HTTP"
-    matcher             = "200"
-    path                = "/login"
-    interval            = 30
-  }
-
-}
-
-
-resource "aws_lb_listener" "front_end" {
-  count = 1
-  load_balancer_arn = aws_lb.kojitechs-lb.arn
-  port              = var.https_port
-  protocol          = "HTTPS"
-  ssl_policy        = "ELBSecurityPolicy-2016-08"
-  certificate_arn   = module.acm.acm_certificate_arn
-
-  default_action {
-    type             = "forward"
-    target_group_arn = aws_lb_target_group.kojitechs_tg[count.index].arn
-  }
-}/*resource "aws_lb" "kojitechs-lb" {
-  name               = format("%s-%s", var.component_name, "kojitechs-lb")
-  internal           = false
-  load_balancer_type = "application"
-  security_groups    = [aws_security_group.web.id]
-  subnets            = aws_subnet.public_subnet.*.id
-
-  tags = {
-    Name = format("%s-%s", var.component_name, "kojitechs-lb")
-  }
-}
-
-resource "aws_lb_target_group" "register_app" {
-  name     = format("%s-%s", var.component_name, "registerapp")
-  port     = var.https_port
-  protocol = "HTTP"
-  vpc_id   = local.vpc_id
-
-  health_check {
-    healthy_threshold   = 2
-    unhealthy_threshold = 2
-    timeout             = 3
-    protocol            = "HTTP"
-    matcher             = "200"
-    path                = "/login"
-    interval            = 30
-  }
-
-}
-
-resource "aws_lb_listener" "front_end" {
-  load_balancer_arn = aws_lb.kojitechs-lb.arn
-  port              = 443
-  protocol          = "HTTPS"
-  ssl_policy        = "ELBSecurityPolicy-2016-08"
-  certificate_arn   = module.acm.acm_certificate_arn
-
-  default_action {
-    type             = "forward"
-    target_group_arn = aws_lb_target_group.register_app.arn
-  }
-}
-*/
 # Terraform AWS Application Load Balancer (ALB)
 
 module "alb" {
@@ -94,7 +9,7 @@ module "alb" {
   name               = "${var.component-name}-alb"
   load_balancer_type = "application"
   vpc_id             = local.vpc_id
-  subnets            = aws_subnet.public_subnet.*.id
+  #subnets            = local.public_subnet.id
 
   security_groups = [aws_security_group.web.id]
 
@@ -249,4 +164,89 @@ module "alb" {
     },
   ]
 }
+/*resource "aws_lb" "kojitechs-lb" {
+  name               = format("%s-%s", var.component-name, "kojitechs-lb")
+  internal           = false
+  load_balancer_type = "application"
+  security_groups    = [aws_security_group.web.id]
+  subnets            = aws_subnet.public_subnet.*.id # [for subnet in aws_subnet.public : subnet.id]
 
+  tags = {
+    Name = format("%s-%s", var.component-name, "kojitechs-lb")
+  }
+}
+
+resource "aws_lb_target_group" "kojitechs_tg" {
+   count                  = var.create_instance ? length(local.Name) : 0
+  name     = format("%s-%s", var.component-name, "tg")
+  port     = var.app_port
+  protocol = "HTTP"
+  vpc_id   = local.vpc_id
+  health_check {
+    healthy_threshold   = 2
+    unhealthy_threshold = 2
+    timeout             = 3
+    protocol            = "HTTP"
+    matcher             = "200"
+    path                = "/login"
+    interval            = 30
+  }
+
+}
+
+
+resource "aws_lb_listener" "front_end" {
+  count = 1
+  load_balancer_arn = aws_lb.kojitechs-lb.arn
+  port              = var.https_port
+  protocol          = "HTTPS"
+  ssl_policy        = "ELBSecurityPolicy-2016-08"
+  certificate_arn   = module.acm.acm_certificate_arn
+
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.kojitechs_tg[count.index].arn
+  }
+}/*resource "aws_lb" "kojitechs-lb" {
+  name               = format("%s-%s", var.component_name, "kojitechs-lb")
+  internal           = false
+  load_balancer_type = "application"
+  security_groups    = [aws_security_group.web.id]
+  subnets            = aws_subnet.public_subnet.*.id
+
+  tags = {
+    Name = format("%s-%s", var.component_name, "kojitechs-lb")
+  }
+}
+
+resource "aws_lb_target_group" "register_app" {
+  name     = format("%s-%s", var.component_name, "registerapp")
+  port     = var.https_port
+  protocol = "HTTP"
+  vpc_id   = local.vpc_id
+
+  health_check {
+    healthy_threshold   = 2
+    unhealthy_threshold = 2
+    timeout             = 3
+    protocol            = "HTTP"
+    matcher             = "200"
+    path                = "/login"
+    interval            = 30
+  }
+
+}
+
+resource "aws_lb_listener" "front_end" {
+  load_balancer_arn = aws_lb.kojitechs-lb.arn
+  port              = 443
+  protocol          = "HTTPS"
+  ssl_policy        = "ELBSecurityPolicy-2016-08"
+  certificate_arn   = module.acm.acm_certificate_arn
+
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.register_app.arn
+  }
+}
+*/

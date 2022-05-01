@@ -31,6 +31,4 @@ terraform {
 }
 
 
- # SBX = arn:aws:iam::848169424404:role/Terraform_assumeRole 
- #arn:aws:iam::290566818138:role/Terraform_assumRole 
 

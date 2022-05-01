@@ -1,10 +1,8 @@
                                
 
 locals {
-  subnet_id = [aws_subnet.priv_subnet[0].id, aws_subnet.priv_subnet[1].id]
-  Name      = ["app1_instance", "app2_instance"]
 
-  # vpc_security_group_ids = [aws_security_group.web.id, aws_security_group.app.id]
+  Name      = ["app1_instance", "app2_instance"]
   mysql = jsondecode(data.aws_secretsmanager_secret_version.mysecret.secret_string)
 
 }
@@ -38,10 +36,11 @@ data "aws_ami" "amzlinux2" {
 
 resource "aws_instance" "web" {
   depends_on             = [module.aurora]
+
   count                  = var.create_instance ? length(local.Name) : 0
   ami                    = data.aws_ami.amzlinux2.id
   instance_type          = "t2.micro"
-  subnet_id              = local.subnet_id[count.index]
+  subnet_id              = element(slice(local.private_subnet_ids, 0,  length(local.Name)), count.index)
   iam_instance_profile   = aws_iam_instance_profile.instance_profile.name
   key_name               = aws_key_pair.bastion_instance.id
   vpc_security_group_ids = [aws_security_group.app_sg.id]
